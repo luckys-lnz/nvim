@@ -1,4 +1,4 @@
-" .vimrc
+" luckys-lnz vim config
 
 " Initialize vim-plug
 call plug#begin('~/.vim/plugged')
@@ -109,4 +109,9 @@ require'compe'.setup {
   };
 }
 EOF
+
+"The above ^ part works perfectly for me
+" -----------------mixed setup---------------
+" this part is kind of a reference i just come and pick stuff at random when needed
+
 
