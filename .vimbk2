@@ -1,4 +1,5 @@
-" luckys-lnz vim config
+" luckys-lnz vim config, this file contains my actual setup along with @fisavim config...
+" its a very long file, totally made for me to save configs i am currently using or will be used in future.
 
 " Initialize vim-plug
 call plug#begin('~/.vim/plugged')
