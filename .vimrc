@@ -1,10 +1,11 @@
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Welcome to my grubox vim world, while this config has not met my taste yet.
-" DESCRIPTION: GRUVBOX COLOR SCHECME FOR VIM
+" DESCRIPTION: LUCKYS-LNZ VIM CONFIGURATION - GRUVBOX COLOR SCHEME AS MAIN
+"              SKIN
 " AUTHOR: luckys-lnz <github.com/luckys-lnz>
 " SOURCE: https://github.com/luckys-lnz/my_vimrc_config/blob/main/.vimrc
 " MODIFIED: 1/8/2024
-" LANGUAGES: Python, C, JS, TS, HTML, CSS 
+" LANGUAGES_SUPPORTED: Python, C, JS, TS, HTML, CSS 
 " NOTE: THIS FILE MIGHT NOT MEET ALL REQUIREMENT OF THE SUPPORTED LANGUAGES,
 "       AND SOME PLUGINS MIGHT BE DUPLICATES.. I WILL LOOK INTO THAT LATER
 "       AS I TRY TO MAKE MY CONFIG MEET MY TASTE.
