@@ -1,5 +1,16 @@
-" lnz vim config -> modified
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Welcome to my grubox vim world, while this config has not met my taste yet.
+" DESCRIPTION: GRUVBOX COLOR SCHECME FOR VIM
+" AUTHOR: luckys-lnz <github.com/luckys-lnz>
+" SOURCE: https://github.com/luckys-lnz/my_vimrc_config/blob/main/.vimrc
+" MODIFIED: 1/8/2024
+" LANGUAGES: Python, C, JS, TS, HTML, CSS 
+" NOTE: THIS FILE MIGHT NOT MEET ALL REQUIREMENT OF THE SUPPORTED LANGUAGES,
+"       AND SOME PLUGINS MIGHT BE DUPLICATES.. I WILL LOOK INTO THAT LATER
+"       AS I TRY TO MAKE MY CONFIG MEET MY TASTE.
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " {{{ Behaviour
+set encoding=utf8
 let mapleader=","
 set nocompatible
 set number                " Show numbers on the left
@@ -28,6 +39,12 @@ set completeopt=menuone,noinsert,noselect " Let the user decide about the autoco
 filetype plugin indent on " Enable file type detection.
 let &t_EI = "\e[2 q"      " Make cursor a line in insert on Vim
 let &t_SI = "\e[6 q"      " Make cursor a line in insert on Vim
+set title                 " Show file title
+set wildmenu " Show a more advance menu
+set spell " enable spell check (may need to download language package)
+syntax on
+let g:kite_supported_languages = ['python', 'javascript']
+filetype plugin indent on   " Allow auto-indenting depending on file type
 
 
 " Keep Visual Mode after indenting a block with > or <
@@ -164,15 +181,92 @@ Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }     " Install fuzzy finder b
 Plug 'junegunn/fzf.vim'                                 " Enable fuzzy finder in Vim with <C-p>
 Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && yarn install'  }
 
+" Random plugs
+Plug 'vim-scripts/indentpython.vim'
+Plug 'Xuyuanp/nerdtree-git-plugin'
+Plug 'tiagofumo/vim-nerdtree-syntax-highlight'
+Plug 'PhilRunninger/nerdtree-visual-selection'
+" Shorthand notation; fetches https://github.com/junegunn/vim-easy-align
+Plug 'junegunn/vim-easy-align'
+" Any valid git URL is allowed
+Plug 'https://github.com/junegunn/vim-github-dashboard.git'
+" Multiple Plug commands can be written in a single line using | separators
+Plug 'SirVer/ultisnips' | Plug 'honza/vim-snippets'
+" On-demand loading
+Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' }
+Plug 'tpope/vim-fireplace', { 'for': 'clojure' }
+
+""""""""""""""""""""""Nice config""""""""""""""""""""""
+Plug 'tiagofumo/vim-nerdtree-syntax-highlight'
+" Show git status in left bar
+Plug 'airblade/vim-gitgutter'
+" Show git status in Nerdtree
+Plug 'Xuyuanp/nerdtree-git-plugin'
+
+" [2] Twig syntax
+Plug 'lepture/vim-jinja'
+
+" [3] easily surround things... Nice intro video: https://www.youtube.com/watch?v=5HF4jSyPpvs
+Plug 'tpope/vim-surround'
+
+" [4] Themes / Prettify stuff
+Plug 'tpope/vim-fugitive'
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
+Plug 'flazz/vim-colorschemes'
+Plug 'felixhummel/setcolors.vim'
+Plug 'gko/vim-coloresque'
+Plug 'hashivim/vim-vagrant'
+Plug 'pangloss/vim-javascript'
+Plug 'mxw/vim-jsx'
+Plug 'jwalton512/vim-blade'
+Plug 'dylnmc/synstack.vim'
+Plug 'NLKNguyen/papercolor-theme'
+Plug 'morhetz/gruvbox'
+Plug 'jparise/vim-graphql'
+
+" [5] Search filesystem with ctrl+p (this fork replaces the old unmaintained project)
+Plug 'ctrlpvim/ctrlp.vim'
+
+" [6]
+
+" [7] Comment out code
+Plug 'vim-scripts/tComment' "Comment easily with gcc
+
+" [8] Snippets
+Plug 'ervandew/supertab'
+Plug 'SirVer/ultisnips'
+Plug 'justinj/vim-react-snippets'
+Plug 'mattn/emmet-vim'
+
+" [9] Pretty format for our code
+Plug 'prettier/vim-prettier', { 'do': 'yarn install --frozen-lockfile --production' }
+
+" [10] Linting and LSP
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
+
+" [11] Move code
+Plug 'tpope/vim-unimpaired'
+
+" [12] Auto close brackets, parenthesis, etc
+Plug 'jiangmiao/auto-pairs'
+
+" [13] Format php code
+Plug 'stephpy/vim-php-cs-fixer'
+Plug 'editorconfig/editorconfig-vim'
+
+
+
 call plug#end()
+
 " }}}
 
 
 " {{{ Theme(s) settings
 if !has('nvim')
-    " Enable italics in Vim 8
-"    let &t_ZH="\e[3m"
- "   let &t_ZR="\e[23m"
+" Enable italics in Vim 8
+let &t_ZH="\e[3m"
+let &t_ZR="\e[23m"
 endif
 let g:gruvbox_material_background = 'hard'
 let g:gruvbox_material_enable_italic = 1
@@ -181,15 +275,47 @@ let g:palenight_terminal_italics = 1
 let g:vim_monokai_tasty_italic = 1
 let g:jellybeans_use_term_italics = 1
 
+" Damn random
+
+let g:bargreybars_auto=0
+let g:airline_solorized_bg='dark'
+let g:airline_powerline_fonts=1
+let g:airline#extension#tabline#enable=1
+let g:airline#extension#tabline#left_sep=' '
+let g:airline#extension#tabline#left_alt_sep='|'
+let g:airline#extension#tabline#formatter='unique_tail'
+let NERDTreeQuitOnOpen=1
+
+let g:WebDevIconsUnicodeDecorateFolderNodes = 1
+let g:WebDevIconsUnicodeDecorateFolderNodeDefaultSymbol = '#'
+let g:WebDevIconsUnicodeDecorateFileNodesExtensionSymbols = {}
+let g:WebDevIconsUnicodeDecorateFileNodesExtensionSymbols['nerdtree'] = '#'
+
+
+
 "============================================================================
 " Colorscheme configuration
 
-if has("termguicolors")
+"Use 24-bit (true-color) mode in Vim/Neovim when outside tmux.
+"If you're using tmux version 2.2 or later, you can remove the outermost $TMUX check and use tmux's 24-bit color support
+"(see < http://sunaku.github.io/tmux-24bit-color.html#usage > for more information.)
+if (empty($TMUX) && getenv('TERM_PROGRAM') != 'Apple_Terminal')
+  if (has("nvim"))
+    "For Neovim 0.1.3 and 0.1.4 < https://github.com/neovim/neovim/pull/2198 >
+    let $NVIM_TUI_ENABLE_TRUE_COLOR=1
+  endif
+  "For Neovim > 0.1.5 and Vim > patch 7.4.1799 < https://github.com/vim/vim/commit/61be73bb0f965a895bfb064ea3e55476ac175162 >
+  "Based on Vim patch 7.4.1770 (`guicolors` option) < https://github.com/vim/vim/commit/8a633e3427b47286869aa4b96f2bfc1fe65b25cd >
+  " < https://github.com/neovim/neovim/wiki/Following-HEAD#20160511 >
+  if (has("termguicolors"))
     set termguicolors
+  endif
 endif
 
 " Set colorscheme to Gruvbox
+let g:gruvbox_italic=1
 colorscheme gruvbox
+let g:gruvbox_bold=1
 
 " Set font to MesloLGLDZNerdfont
 let g:airline_powerline_fonts = 1
@@ -198,7 +324,7 @@ let g:airline_theme = 'gruvbox'
 " silent! colorscheme night-owl
 " silent! colorscheme palenight
 " silent! colorscheme OceanicNext
-" silent! colorscheme gruvbox
+silent! colorscheme gruvbox
 " silent! colorscheme jellybeans
  " }}}
 
@@ -275,12 +401,6 @@ nmap <leader>r  <Plug>(coc-codeaction-refactor-selected)
 " Use tab for trigger completion with characters ahead and navigate.
 " NOTE: Use command ':verbose imap <tab>' to make sure tab is not mapped by
 " other plugin before putting this into your config.
-inoremap <silent><expr> <TAB>
-      \ pumvisible() ? "\<C-n>" :
-      \ <SID>check_back_space() ? "\<TAB>" :
-      \ coc#refresh()
-inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
-
 
 function! s:check_back_space() abort
   let col = col('.') - 1
@@ -312,6 +432,29 @@ endfunction
 
 " Add `:Format` command to format current buffer.
 command! -nargs=0 Format :call CocAction('format')
+" Formatting selected code.
+xmap <leader>f  <Plug>(coc-format-selected)
+nmap <leader>f  <Plug>(coc-format-selected)
+" Applying codeAction to the selected region.
+" Example: `<leader>aap` for current paragraph
+xmap <leader>a  <Plug>(coc-codeaction-selected)
+nmap <leader>a  <Plug>(coc-codeaction-selected)
+" Remap keys for applying codeAction to the current buffer.
+nmap <leader>ac  <Plug>(coc-codeaction)
+" Apply AutoFix to problem on the current line.
+nmap <leader>qf  <Plug>(coc-fix-current)
+
+" Add (Neo)Vim's native statusline support.
+" NOTE: Please see `:h coc-status` for integrations with external plugins that
+" provide custom statusline: lightline.vim, vim-airline.
+set statusline^=%{coc#status()}%{get(b:,'coc_current_function','')}
+" [11]
+" Move single lines
+nmap <C-k> [e
+nmap <C-j> ]e
+" Move multiple lines selected
+vmap <C-k> [egv
+vmap <C-j> ]egv
 
 
 " Add `:Fold` command to fold current buffer.
@@ -327,6 +470,30 @@ command! -nargs=0 OR   :call     CocAction('runCommand', 'editor.action.organize
 nnoremap <silent><nowait> <space>a  :<C-u>CocList diagnostics<cr>
 " }}}
 
+
+au BufNewFile,BufRead *.twig set ft=jinja "Syntax highlight twig files
+
+" Show syntax highlighting groups for word under cursor
+ :nmap <leader>ss <plug>(SynStack)
+
+
+ "{{{ [5]
+" Use The Silver Searcher https://github.com/ggreer/the_silver_searcher (a lot
+" faster than grep)
+if executable('ag')
+  " Use Ag over Grep
+  set grepprg=ag\ --nogroup\ --nocolor
+
+  " Use ag in CtrlP for listing files. Lightning fast and respects .gitignore
+  let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
+  let g:ctrlp_working_path_mode = 'r'
+
+  " ag is fast enough that CtrlP doesn't need to cache
+  let g:ctrlp_use_caching = 0
+
+  let g:ctrlp_extensions = ['line']
+endif
+"}}}
 
 " {{{ Vista
 " let g:vista_default_executive = 'coc'
@@ -462,9 +629,23 @@ let NERDTreeQuitOnOpen=1   " Close sidebar when opening a file
 let NERDTreeShowHidden=1   " Do I have to explain this
 let NERDTreeWinPos='right' " Or this?
 let NERDTreeWinSize=45     " Increase the sidebar size
-map <C-k><C-k> :NERDTreeToggle<cr>
-map <C-k><C-f> :NERDTreeFind<cr>
-" Do not show lightline on NERDTree
+
+" Tagbar -----------------------------
+
+" toggle tagbar display
+map <F4> :TagbarToggle<CR>
+" autofocus on tagbar open
+let g:tagbar_autofocus = 1
+
+" NERDTree -----------------------------
+
+" toggle nerdtree display
+map <F3> :NERDTreeToggle<CR>
+" open nerdtree with the current file selected
+nmap ,t :NERDTreeFind<CR>
+
+" don;t show these file types
+let NERDTreeIgnore = ['\.pyc$', '\.pyo$']" Do not show lightline on NERDTree
 augroup nerdtree-normal-statusline
     autocmd!
     autocmd BufEnter,FileType nerdtree setlocal statusline=%#Normal#
