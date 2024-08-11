@@ -10,7 +10,34 @@
 "       AND SOME PLUGINS MIGHT BE DUPLICATES.. I WILL LOOK INTO THAT LATER
 "       AS I TRY TO MAKE MY CONFIG MEET MY TASTE.
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" {{{ Behaviour
+
+"----------------------------------------------------------------------------------------------------------
+
+" 1. OS specific
+
+    if ($OS == 'Windows_NT')
+        " Windows specific settings
+
+        " 1.1 Restore cursor to file position in previous editing session http://vim.wikia.com/wiki/VimTip80
+        set viminfo='10,\"100,:20,%,n$VIM/_viminfo
+
+        " 1.2 executing OS command within Vim
+        set shell=c:\Windows\system32\cmd.exe
+        " shell command flag
+        set shellcmdflag=/c
+    else
+        " Unix specific settings
+        " 1.1 : pick it from $HOME/.viminfo
+        set viminfo='10,\"100,:20,%,n~/.viminfo
+
+        " 1.2 executing OS command within Vim
+        set shell=/bin/csh
+    endif
+
+"----------------------------------------------------------------------------------------------------------
+
+
+"{{{ Behaviour
 set encoding=utf8
 let mapleader=","
 set nocompatible
@@ -21,14 +48,14 @@ set ignorecase            " Search ignoring case
 set smartcase             " Do not ignore case if the search patter has uppercase
 set noerrorbells          " I hate bells when an error occurs
 set belloff=esc           " Disable bell if type <esc> multiple times
-set tabstop=4             " Tab size of 4 spaces
-set softtabstop=4         " On insert use 4 spaces for tab
-set shiftwidth=0
-" set expandtab             " Use appropriate number of spaces (no so good for PHP)
+"set tabstop=4             " Tab size of 4 spaces
+"set softtabstop=4         " On insert use 4 spaces for tab
+"set shiftwidth=0
+"set expandtab             " Use appropriate number of spaces (no so good for PHP)
 set nowrap                " Wrapping sucks (except on markdown)
 set noswapfile            " Do not leave any backup files
 set mouse=i               " Enable mouse on insert mode
-"set clipboard=unnamed,unnamedplus     " Use the OS clipboard
+set clipboard=unnamed,unnamedplus     " Use the OS clipboard
 set showmatch             " Highlights the matching parenthesis
 set termguicolors         " Required for some themes
 set splitright splitbelow " Changes the behaviour of vertical and horizontal splits
@@ -46,7 +73,15 @@ set spell " enable spell check (may need to download language package)
 syntax on
 let g:kite_supported_languages = ['python', 'javascript']
 filetype plugin indent on   " Allow auto-indenting depending on file type
+let fancy_symbols_enabled = 1
+let using_neovim = has('nvim')
+let using_vim = !using_neovim
+let transparent_background = 0
+set textwidth=79
 
+:inoremap <C-v> <ESC>"+pa
+:vnoremap <C-c> "+y
+:vnoremap <C-d> "+d
 
 " Keep Visual Mode after indenting a block with > or <
 vmap < <gv
@@ -66,7 +101,7 @@ noremap XX "+x<CR>
 nnoremap n nzzzv
 nnoremap N Nzzzv
 
-
+set guiheadroom=0
 " Enable native markdown folding (hopefully will be integrated in nvim)
 let g:markdown_folding = 1
 " }}}
@@ -256,42 +291,54 @@ Plug 'jiangmiao/auto-pairs'
 Plug 'stephpy/vim-php-cs-fixer'
 Plug 'editorconfig/editorconfig-vim'
 
-
-
 call plug#end()
 
 " }}}
 
 
-" {{{ Theme(s) settings
-if !has('nvim')
-" Enable italics in Vim 8
-let &t_ZH="\e[3m"
-let &t_ZR="\e[23m"
+if using_vim
+  " Consoles as buffers (neovim has its own consoles as buffers)
+  Plug 'rosenfeld/conque-term'
+  " XML/HTML tags navigation (neovim has its own)
+  Plug 'vim-scripts/matchit.zip'
 endif
-let g:gruvbox_material_background = 'hard'
-let g:gruvbox_material_enable_italic = 1
-let g:gruvbox_material_palette = 'mix'
-let g:palenight_terminal_italics = 1
-let g:vim_monokai_tasty_italic = 1
-let g:jellybeans_use_term_italics = 1
 
-" Damn random
 
-let g:bargreybars_auto=0
-let g:airline_solorized_bg='dark'
-let g:airline_powerline_fonts=1
-let g:airline#extension#tabline#enable=1
-let g:airline#extension#tabline#left_sep=' '
-let g:airline#extension#tabline#left_alt_sep='|'
-let g:airline#extension#tabline#formatter='unique_tail'
-let NERDTreeQuitOnOpen=1
+if has("gui_running")
+  if has("gui_gtk3")
+    set guifont=RecMonoCasualNerdFont\ 10
+  elseif has("gui_macvim")
+    set guifont=Menlo\ Regular:h14
+  elseif has("gui_win32")
+    set guifont=Consolas:h11:cANSI
+  endif
+endif
 
-let g:WebDevIconsUnicodeDecorateFolderNodes = 1
-let g:WebDevIconsUnicodeDecorateFolderNodeDefaultSymbol = '#'
-let g:WebDevIconsUnicodeDecorateFileNodesExtensionSymbols = {}
-let g:WebDevIconsUnicodeDecorateFileNodesExtensionSymbols['nerdtree'] = '#'
 
+" remove ugly vertical lines on window division
+set fillchars+=vert:\
+
+" use 256 colors when possible
+if has('gui_running') || using_neovim || (&term =~? 'mlterm\|xterm\|xterm-256\|screen-256')
+  if !has('gui_running')
+    let &t_Co = 256
+  endif
+  " Set colorscheme to Gruvbox
+  let g:gruvbox_italic=1
+  colorscheme gruvbox
+  let g:gruvbox_bold=1
+  set background=dark
+  let g:gruvbox_underline=0
+  let g:gruvbox_contrast_dark=1
+else
+  colorscheme delek
+endif
+
+if transparent_background
+  highlight Normal guibg=none
+  highlight Normal ctermbg=none
+  highlight NonText ctermbg=none
+endif
 
 
 "============================================================================
@@ -313,21 +360,8 @@ if (empty($TMUX) && getenv('TERM_PROGRAM') != 'Apple_Terminal')
   endif
 endif
 
-" Set colorscheme to Gruvbox
-let g:gruvbox_italic=1
-colorscheme gruvbox
-let g:gruvbox_bold=1
 
-" Set font to MesloLGLDZNerdfont
-let g:airline_powerline_fonts = 1
-let g:airline_theme = 'gruvbox'
 
-" silent! colorscheme night-owl
-" silent! colorscheme palenight
-" silent! colorscheme OceanicNext
-silent! colorscheme gruvbox
-" silent! colorscheme jellybeans
- " }}}
 
 " {{{ Highlight the symbol and its references when holding the cursor
 autocmd CursorHold * silent call CocActionAsync('highlight')
@@ -358,35 +392,43 @@ nmap <leader>as  <Plug>(coc-codeaction-source)
 nmap <leader>qf  <Plug>(coc-fix-current)
 " }}}
 
+"{{{
+let g:user_emmet_settings = {
+      \  'javascript' : {
+      \      'extends' : 'jsx',
+      \  },
+      \}
+"}}}
+
 
 " {{{ CoC extensions to be auto installed
 let g:coc_node_args = ['--max-old-space-size=8192']
 let g:coc_global_extensions = [
-    \ 'coc-css',
-    \ 'coc-diagnostic',
-    \ 'coc-eslint',
-    \ 'coc-html',
-    \ 'coc-json',
-    \ 'coc-marketplace',
-    \ 'coc-phpls',
-    \ 'coc-prettier',
-    \ 'coc-stylelintplus',
-    \ 'coc-tsserver',
-    \]
+      \ 'coc-css',
+      \ 'coc-diagnostic',
+      \ 'coc-eslint',
+      \ 'coc-html',
+      \ 'coc-json',
+      \ 'coc-marketplace',
+      \ 'coc-phpls',
+      \ 'coc-prettier',
+      \ 'coc-stylelintplus',
+      \ 'coc-tsserver',
+      \]
 " }}}
-    " \ 'coc-python',
+" \ 'coc-python',
 
 "{{{ ALE configuration
 let g:ale_fixers = {
-\  'javascript': ['prettier'],
-\  'typescript': ['prettier'],
-\  'css': ['prettier'],
-\  'html': ['prettier'],
-\}
+      \  'javascript': ['prettier'],
+      \  'typescript': ['prettier'],
+      \  'css': ['prettier'],
+      \  'html': ['prettier'],
+      \}
 let g:ale_linters = {
-\  'javascript': ['eslint'],
-\  'typescript': ['tslint'],
-\}
+      \  'javascript': ['eslint'],
+      \  'typescript': ['tslint'],
+      \}
 let g:ale_fix_on_save = 1
 "}}}
 
@@ -475,10 +517,10 @@ nnoremap <silent><nowait> <space>a  :<C-u>CocList diagnostics<cr>
 au BufNewFile,BufRead *.twig set ft=jinja "Syntax highlight twig files
 
 " Show syntax highlighting groups for word under cursor
- :nmap <leader>ss <plug>(SynStack)
+:nmap <leader>ss <plug>(SynStack)
 
 
- "{{{ [5]
+"{{{ [5]
 " Use The Silver Searcher https://github.com/ggreer/the_silver_searcher (a lot
 " faster than grep)
 if executable('ag')
@@ -496,36 +538,31 @@ if executable('ag')
 endif
 "}}}
 
-" {{{ Vista
-" let g:vista_default_executive = 'coc'
-" let g:vista#renderer#enable_icon = 1
-" let g:vista_sidebar_width = 45
-" let g:vista_close_on_jump = 1
-" let g:vista_close_on_fzf_select = 1
-" let g:vista_fzf_preview = ['right:50%']
-nnoremap <C-k><C-o> :Vista finder fzf:coc<cr>
-" }}}
+""""""""""""""""""""Airline Config"""""""""""""""""""""""""""
+let g:airline_powerline_fonts=1
+" Enable the Airline tabline extension
+let g:airline#extensions#tabline#enabled = 1
+
+" Customize the tabline
+let g:airline#extensions#tabline#tab_nr_type = 1
+
+" Set tab name format
+function! SetTabName()
+  return printf('%d: %s', tabpagenr(), bufname('%'))
+endfunction
+
+" Use the function to set tab names
+let g:airline#extensions#tabline#tab_labels = 'SetTabName()'
 
 
-" {{{ Fancy Symbols!!
-let fancy_symbols_enabled = 1
-if fancy_symbols_enabled
-   let g:webdevicons_enable = 1
-   " custom airline symbols
-   if !exists('g:airline_symbols')
-      let g:airline_symbols = {}
-   endif
-   let g:airline_left_sep = ''
-   let g:airline_left_alt_sep = ''
-   let g:airline_right_sep = ''
-   let g:airline_right_alt_sep = ''
-   let g:airline_symbols.branch = '⭠'
-   let g:airline_symbols.readonly = '⭤'
-   let g:airline_symbols.linenr = '⭡'
-else
-   let g:webdevicons_enable = 0
-endif
-" }}}
+"-- ULTISNIPS CONFIG
+let g:UltiSnipsExpandTrigger="<c-j>"
+let g:UltiSnipsListSnippets="<c-l>"
+
+"-- INDENTLINE CONFIG
+let g:indentLine_color_gui = '#423d38'
+let g:indentLine_setConceal = 0
+let g:indentLine_char = '|'
 
 " {{{ Mappings for CoCList
 " Show all diagnostics.
@@ -560,12 +597,12 @@ imap <M-Left> <ESC>:tabp<CR>
 let g:ale_disable_lsp = 1
 let g:ale_linters_explicit = 1
 let g:ale_linters = {
-  \ 'python': ['pylint']
-  \ }
+      \ 'python': ['pylint']
+      \ }
 let g:ale_fixers = {
-  \ 'php': ['phpcbf'],
-  \ '*': ['remove_trailing_lines', 'trim_whitespace'],
-  \}
+      \ 'php': ['phpcbf'],
+      \ '*': ['remove_trailing_lines', 'trim_whitespace'],
+      \}
 let g:ale_lint_on_text_changed = 'never'
 let g:ale_lint_on_insert_leave = 0
 "}}}
@@ -580,13 +617,13 @@ set statusline+=%h
 " Path to file: https://github.com/itchyny/lightline.vim/issues/87#issuecomment-119130738
 let g:lightline = { 'active': {  } }
 let g:lightline.component = {
-  \  'lineinfo': "[%{printf('%03d/%03d',line('.'),line('$'))}]"
-  \}
+      \  'lineinfo': "[%{printf('%03d/%03d',line('.'),line('$'))}]"
+      \}
 let g:lightline.component_function = {
-  \    'gitbranch': 'fugitive#head',
-  \    'method': 'NearestMethodOrFunction',
-  \    'filename': 'LightLineFilename'
-  \  }
+      \    'gitbranch': 'fugitive#head',
+      \    'method': 'NearestMethodOrFunction',
+      \    'filename': 'LightLineFilename'
+      \  }
 " When using ALE for diagnostics
 " let g:lightline.component_expand = {
 "       \  'linter_checking': 'lightline#ale#checking',
@@ -597,11 +634,11 @@ let g:lightline.component_function = {
 "       \ }
 " " When using CoC's diagnostics-languageserver for diagnostics
 let g:lightline.component_expand = {
-  \   'linter_warnings': 'lightline#coc#warnings',
-  \   'linter_errors': 'lightline#coc#errors',
-  \   'linter_ok': 'lightline#coc#ok',
-  \   'status': 'lightline#coc#status',
-  \ }
+      \   'linter_warnings': 'lightline#coc#warnings',
+      \   'linter_errors': 'lightline#coc#errors',
+      \   'linter_ok': 'lightline#coc#ok',
+      \   'status': 'lightline#coc#status',
+      \ }
 let g:lightline.component_type = {
       \     'linter_checking': 'right',
       \     'linter_infos': 'right',
@@ -610,13 +647,13 @@ let g:lightline.component_type = {
       \     'linter_ok': 'right',
       \ }
 let g:lightline.active.left = [
-  \      [ 'linter_checking', 'linter_errors', 'linter_warnings', 'linter_infos', 'linter_ok' ],
-  \      [ 'coc_errors', 'coc_warnings', 'coc_ok' ], [ 'coc_status'  ],
-  \      [ 'gitbranch', 'readonly', 'filename', 'tagbar', 'modified', 'method' ]
-  \]
+      \      [ 'linter_checking', 'linter_errors', 'linter_warnings', 'linter_infos', 'linter_ok' ],
+      \      [ 'coc_errors', 'coc_warnings', 'coc_ok' ], [ 'coc_status'  ],
+      \      [ 'gitbranch', 'readonly', 'filename', 'tagbar', 'modified', 'method' ]
+      \]
 let g:lightline.active.right = [
-  \      ['lineinfo'], ['fileformat', 'filetype']
-  \]
+      \      ['lineinfo'], ['fileformat', 'filetype']
+      \]
 " https://github.com/itchyny/lightline.vim/tree/master/autoload/lightline/colorscheme
 " let g:lightline.colorscheme = 'materia' " Works better with oceanic
 let g:lightline.colorscheme = 'gruvbox' " Works better with palenight 'nord'
@@ -641,15 +678,15 @@ let g:tagbar_autofocus = 1
 " NERDTree -----------------------------
 
 " toggle nerdtree display
-map <F3> :NERDTreeToggle<CR>
+map <C-t> :NERDTreeToggle<CR>
 " open nerdtree with the current file selected
 nmap ,t :NERDTreeFind<CR>
 
 " don;t show these file types
 let NERDTreeIgnore = ['\.pyc$', '\.pyo$']" Do not show lightline on NERDTree
 augroup nerdtree-normal-statusline
-    autocmd!
-    autocmd BufEnter,FileType nerdtree setlocal statusline=%#Normal#
+  autocmd!
+  autocmd BufEnter,FileType nerdtree setlocal statusline=%#Normal#
 augroup END
 " }}}
 
@@ -696,8 +733,8 @@ nmap ,c :Commands<CR>
 let g:mkdp_auto_close = 0
 let g:mkdp_refresh_slow = 1
 let g:mkdp_preview_options = {
-  \ 'sync_scroll_type': 'relative',
-  \ 'disable_sync_scroll': 1,
-  \ 'disable_filename': 1
-  \ }
+      \ 'sync_scroll_type': 'relative',
+      \ 'disable_sync_scroll': 1,
+      \ 'disable_filename': 1
+      \ }
 " }}}
