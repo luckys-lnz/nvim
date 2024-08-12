@@ -2,7 +2,7 @@
  **will add a good readme later on for now i just want to jump into vim and complete some projects at hand, thanks for understanding, but wait...**
  ***this readme is for the .vimrc***
  
-- A good setup for webdevelopment
+- A good setup for development
 - autocomplete
 - it contains ability to copy to clipboard outside vim
 - Allows mouse clicking
