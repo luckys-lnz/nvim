@@ -11,32 +11,6 @@
 "       AS I TRY TO MAKE MY CONFIG MEET MY TASTE.
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-"----------------------------------------------------------------------------------------------------------
-
-" 1. OS specific
-
-    if ($OS == 'Windows_NT')
-        " Windows specific settings
-
-        " 1.1 Restore cursor to file position in previous editing session http://vim.wikia.com/wiki/VimTip80
-        set viminfo='10,\"100,:20,%,n$VIM/_viminfo
-
-        " 1.2 executing OS command within Vim
-        set shell=c:\Windows\system32\cmd.exe
-        " shell command flag
-        set shellcmdflag=/c
-    else
-        " Unix specific settings
-        " 1.1 : pick it from $HOME/.viminfo
-        set viminfo='10,\"100,:20,%,n~/.viminfo
-
-        " 1.2 executing OS command within Vim
-        set shell=/bin/csh
-    endif
-
-"----------------------------------------------------------------------------------------------------------
-
-
 "{{{ Behaviour
 set encoding=utf8
 let mapleader=","
@@ -48,10 +22,10 @@ set ignorecase            " Search ignoring case
 set smartcase             " Do not ignore case if the search patter has uppercase
 set noerrorbells          " I hate bells when an error occurs
 set belloff=esc           " Disable bell if type <esc> multiple times
-"set tabstop=4             " Tab size of 4 spaces
-"set softtabstop=4         " On insert use 4 spaces for tab
-"set shiftwidth=0
-"set expandtab             " Use appropriate number of spaces (no so good for PHP)
+set tabstop=4             " Tab size of 4 spaces
+set softtabstop=4         " On insert use 4 spaces for tab
+set shiftwidth=0
+set expandtab             " Use appropriate number of spaces (no so good for PHP)
 set nowrap                " Wrapping sucks (except on markdown)
 set noswapfile            " Do not leave any backup files
 set mouse=i               " Enable mouse on insert mode
@@ -157,12 +131,10 @@ Plug 'haishanh/night-owl.vim'                           " Hight contrast but rel
 Plug 'mhartington/oceanic-next'                         " Beautiful pastell-y colors
 Plug 'nanotech/jellybeans.vim'                          " Hight contrast but colorfoul
 
-" Gruvbox theme and MesloLGLDZNerdfont
+" Gruvbox theme 
 Plug 'morhetz/gruvbox'
-Plug 'ryanoasis/vim-devicons'
 Plug 'ryanoasis/vim-webdevicons'
 Plug 'ryanoasis/nerd-fonts', {'on': 'NERDFonts'}
-Plug 'ryanoasis/vim-devicons'
 
 Plug 'sheerun/vim-polyglot'                             " Metapackage with a bunch of syntax highlight libs
 
@@ -258,7 +230,6 @@ Plug 'mxw/vim-jsx'
 Plug 'jwalton512/vim-blade'
 Plug 'dylnmc/synstack.vim'
 Plug 'NLKNguyen/papercolor-theme'
-Plug 'morhetz/gruvbox'
 Plug 'jparise/vim-graphql'
 
 " [5] Search filesystem with ctrl+p (this fork replaces the old unmaintained project)
@@ -283,30 +254,10 @@ Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
 " [11] Move code
 Plug 'tpope/vim-unimpaired'
-
-" [12] Auto close brackets, parenthesis, etc
-Plug 'jiangmiao/auto-pairs'
-
-" [13] Format php code
-Plug 'stephpy/vim-php-cs-fixer'
-Plug 'editorconfig/editorconfig-vim'
-
-call plug#end()
-
-" }}}
-
-
-if using_vim
-  " Consoles as buffers (neovim has its own consoles as buffers)
-  Plug 'rosenfeld/conque-term'
-  " XML/HTML tags navigation (neovim has its own)
-  Plug 'vim-scripts/matchit.zip'
-endif
-
-
+" [12] Auto close brackets, parenthesis, etc Plug 'jiangmiao/auto-pairs' [13] Format php code Plug 'stephpy/vim-php-cs-fixer' Plug 'editorconfig/editorconfig-vim' call plug#end() }}} if using_vim Consoles as buffers (neovim has its own consoles as buffers) Plug 'rosenfeld/conque-term' XML/HTML tags navigation (neovim has its own) Plug 'vim-scripts/matchit.zip' endif
 if has("gui_running")
   if has("gui_gtk3")
-    set guifont=RecMonoCasualNerdFont\ 10
+    set guifont=RecMonoCasual\ Nerd\ Font\ 10
   elseif has("gui_macvim")
     set guifont=Menlo\ Regular:h14
   elseif has("gui_win32")
@@ -538,22 +489,13 @@ if executable('ag')
 endif
 "}}}
 
+
+
+
+
 """"""""""""""""""""Airline Config"""""""""""""""""""""""""""
+"{{{ Statusline configuration with Airline
 let g:airline_powerline_fonts=1
-" Enable the Airline tabline extension
-let g:airline#extensions#tabline#enabled = 1
-
-" Customize the tabline
-let g:airline#extensions#tabline#tab_nr_type = 1
-
-" Set tab name format
-function! SetTabName()
-  return printf('%d: %s', tabpagenr(), bufname('%'))
-endfunction
-
-" Use the function to set tab names
-let g:airline#extensions#tabline#tab_labels = 'SetTabName()'
-
 
 "-- ULTISNIPS CONFIG
 let g:UltiSnipsExpandTrigger="<c-j>"
@@ -563,6 +505,24 @@ let g:UltiSnipsListSnippets="<c-l>"
 let g:indentLine_color_gui = '#423d38'
 let g:indentLine_setConceal = 0
 let g:indentLine_char = '|'
+
+
+" Customize the tabline
+let g:airline#extensions#tabline#tab_nr_type = 1
+let g:airline#extensions#tabline#enabled = 1
+let g:airline#extensions#tabline#formatter = 'default'
+let g:airline#extensions#tabline#show_tab_type = 1
+let g:airline#extensions#tabline#tab_nr_type = 1
+
+" Set tab name format
+function! SetTabName()
+  return printf('%d: %s', tabpagenr(), bufname('%'))
+endfunction
+
+" Use the function to set tab names
+let g:airline#extensions#tabline#tab_labels = 'SetTabName()'
+"}}}
+
 
 " {{{ Mappings for CoCList
 " Show all diagnostics.
@@ -593,19 +553,37 @@ imap <M-Left> <ESC>:tabp<CR>
 " }}}
 
 
-" {{{ ALE
-let g:ale_disable_lsp = 1
-let g:ale_linters_explicit = 1
+" {{{ Plugin Settings
+" ALE settings for linting and autocompletion
 let g:ale_linters = {
-      \ 'python': ['pylint']
-      \ }
+\   'python': ['flake8'],
+\   'c': ['clangd'],
+\   'javascript': ['eslint'],
+\   'html': ['tidy'],
+\   'css': ['stylelint'],
+\}
 let g:ale_fixers = {
-      \ 'php': ['phpcbf'],
-      \ '*': ['remove_trailing_lines', 'trim_whitespace'],
-      \}
-let g:ale_lint_on_text_changed = 'never'
-let g:ale_lint_on_insert_leave = 0
-"}}}
+\   'python': ['black'],
+\   'javascript': ['prettier'],
+\   'html': ['prettier'],
+\   'css': ['prettier'],
+\}
+let g:ale_fix_on_save = 1
+
+" Key mappings for ALE
+nmap <silent> <leader>r <Plug>(ale_fix)
+nmap <silent> <leader>n <Plug>(ale_next_wrap)
+nmap <silent> <leader>p <Plug>(ale_previous_wrap)
+
+" Enable NerdCommenter
+let g:NERDCreateDefaultMappings = 1
+
+" Enable Flake8 for Python
+let g:flake8_show_in_gutter = 1
+
+
+" }}}
+
 
 
 " {{{ LightLine
@@ -625,13 +603,13 @@ let g:lightline.component_function = {
       \    'filename': 'LightLineFilename'
       \  }
 " When using ALE for diagnostics
-" let g:lightline.component_expand = {
-"       \  'linter_checking': 'lightline#ale#checking',
-"       \  'linter_infos': 'lightline#ale#infos',
-"       \  'linter_warnings': 'lightline#ale#warnings',
-"       \  'linter_errors': 'lightline#ale#errors',
-"       \  'linter_ok': 'lightline#ale#ok',
-"       \ }
+let g:lightline.component_expand = {
+\  'linter_checking': 'lightline#ale#checking',
+\  'linter_infos': 'lightline#ale#infos',
+\  'linter_warnings': 'lightline#ale#warnings',
+\  'linter_errors': 'lightline#ale#errors',
+\  'linter_ok': 'lightline#ale#ok',
+\ }
 " " When using CoC's diagnostics-languageserver for diagnostics
 let g:lightline.component_expand = {
       \   'linter_warnings': 'lightline#coc#warnings',
@@ -656,7 +634,7 @@ let g:lightline.active.right = [
       \]
 " https://github.com/itchyny/lightline.vim/tree/master/autoload/lightline/colorscheme
 " let g:lightline.colorscheme = 'materia' " Works better with oceanic
-let g:lightline.colorscheme = 'gruvbox' " Works better with palenight 'nord'
+" let g:lightline.colorscheme = 'gruvbox' " Works better with palenight 'nord'
 " let g:lightline.colorscheme = 'selenized_dark' " Goes great with night owl
 " }}}
 
