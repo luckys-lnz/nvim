@@ -254,7 +254,20 @@ Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
 " [11] Move code
 Plug 'tpope/vim-unimpaired'
-" [12] Auto close brackets, parenthesis, etc Plug 'jiangmiao/auto-pairs' [13] Format php code Plug 'stephpy/vim-php-cs-fixer' Plug 'editorconfig/editorconfig-vim' call plug#end() }}} if using_vim Consoles as buffers (neovim has its own consoles as buffers) Plug 'rosenfeld/conque-term' XML/HTML tags navigation (neovim has its own) Plug 'vim-scripts/matchit.zip' endif
+" [12] Auto close brackets, parenthesis, etc 
+Plug 'jiangmiao/auto-pairs' 
+" [13] Format php code 
+Plug 'stephpy/vim-php-cs-fixer' 
+Plug 'editorconfig/editorconfig-vim' 
+" }}}
+
+
+"if using_vim Consoles as buffers (neovim has its own consoles as buffers) 
+Plug 'rosenfeld/conque-term' "XML/HTML tags navigation (neovim has its own) 
+Plug 'vim-scripts/matchit.zip' 
+
+call plug#end() 
+
 if has("gui_running")
   if has("gui_gtk3")
     set guifont=RecMonoCasual\ Nerd\ Font\ 10
@@ -490,38 +503,53 @@ endif
 "}}}
 
 
-
-
-
 """"""""""""""""""""Airline Config"""""""""""""""""""""""""""
-"{{{ Statusline configuration with Airline
-let g:airline_powerline_fonts=1
 
-"-- ULTISNIPS CONFIG
-let g:UltiSnipsExpandTrigger="<c-j>"
-let g:UltiSnipsListSnippets="<c-l>"
+" {{{ Airline Configuration
+" Enable airline
+let g:airline#enabled = 1
 
-"-- INDENTLINE CONFIG
-let g:indentLine_color_gui = '#423d38'
-let g:indentLine_setConceal = 0
-let g:indentLine_char = '|'
+" Enable powerline fonts for a beautiful appearance
+let g:airline_powerline_fonts = 1
 
-
-" Customize the tabline
-let g:airline#extensions#tabline#tab_nr_type = 1
+" Enable airline extensions
 let g:airline#extensions#tabline#enabled = 1
-let g:airline#extensions#tabline#formatter = 'default'
+let g:airline#extensions#tabline#show_buffers = 1
+let g:airline#extensions#tabline#show_tabs = 1
 let g:airline#extensions#tabline#show_tab_type = 1
 let g:airline#extensions#tabline#tab_nr_type = 1
 
-" Set tab name format
-function! SetTabName()
-  return printf('%d: %s', tabpagenr(), bufname('%'))
-endfunction
+" Customize the airline statusline to display file name and line number
+let g:airline#extensions#default#left_sep = ' '
+let g:airline#extensions#default#right_sep = ' '
 
-" Use the function to set tab names
-let g:airline#extensions#tabline#tab_labels = 'SetTabName()'
-"}}}
+" Configure statusline sections
+let g:airline#extensions#default#section_a = 'mode'
+let g:airline#extensions#default#section_b = 'branch'
+let g:airline#extensions#default#section_c = 'filename'     " Displays the full file path
+let g:airline#extensions#default#section_x = 'filetype'     " Displays filetype
+let g:airline#extensions#default#section_y = 'linenumber'   " Displays line number
+let g:airline#extensions#default#section_z = 'percentage'    " Displays percentage through file
+
+" Tabline settings
+let g:airline#extensions#tabline#formatter = 'default'
+let g:airline#extensions#tabline#show_buffers = 1
+let g:airline#extensions#tabline#show_tabs = 1
+let g:airline#extensions#tabline#show_tab_type = 1
+let g:airline#extensions#tabline#tab_nr_type = 1
+let g:airline#extensions#tabline#show_tab_nr = 0
+let g:airline#extensions#tabline#show_splits = 1
+
+" Set Airline theme
+"let g:airline_theme = 'dark'
+"let g:airline_theme='luna' " Optional: Choose a theme that enhances the tabline appearance
+
+" Position of the Airline statusline (at the top)
+set laststatus=2
+set showtabline=2
+
+" }}}
+
 
 
 " {{{ Mappings for CoCList
@@ -716,3 +744,4 @@ let g:mkdp_preview_options = {
       \ 'disable_filename': 1
       \ }
 " }}}
+
