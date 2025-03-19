@@ -129,4 +129,11 @@ require("tokyonight").setup({
 
 🚀 **Enjoy coding with Neovim!**
 
+---
+
+## 📜 License
+
+This Neovim configuration is released under the **MIT License**.  
+You're free to use, modify, and distribute.
+NOT FOR SALE !.
 
