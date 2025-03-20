@@ -518,6 +518,31 @@ return {
 			{ "<leader>xT", "<cmd>TodoTrouble keywords=TODO,FIX,FIXME<cr>", desc = "Todo/Fix/Fixme (Trouble)" },
 			{ "<leader>st", "<cmd>TodoTelescope<cr>", desc = "Todo" },
 			{ "<leader>sT", "<cmd>TodoTelescope keywords=TODO,FIX,FIXME<cr>", desc = "Todo/Fix/Fixme" },
+			-- adding Todo
+			{
+				"<leader>at",
+				"oTODO: ",
+				desc = "Add TODO comment",
+				mode = "n",
+			},
+			{
+				"<leader>af",
+				"oFIX: ",
+				desc = "Add FIX comment",
+				mode = "n",
+			},
+			{
+				"<leader>an",
+				"oNOTE: ",
+				desc = "Add NOTE comment",
+				mode = "n",
+			},
+			{
+				"<leader>ai",
+				"oIMPORTANT: ",
+				desc = "Add IMPORTANT comment",
+				mode = "n",
+			},
 		},
 	},
 
