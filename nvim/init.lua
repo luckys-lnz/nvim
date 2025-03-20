@@ -21,46 +21,17 @@ vim.opt.rtp:prepend(lazypath)
 
 -- Basic Neovim settings
 require("config.options")
--- Keymaps
 require("config.keymaps")
--- Autocommands
 require("config.autocmds")
 
 -- Setup lazy.nvim
-require("lazy").setup({
-	spec = {
-		-- Import all plugin modules
-		{ import = "plugins" },
-	},
-	defaults = {
-		lazy = true, -- Load plugins on demand for better startup time
-		version = false, -- Always use the latest git commit
-	},
-	install = { colorscheme = { "catppuccin" } }, --- another option for colorscheme "habamax"
-	checker = { enabled = true }, -- Automatically check for plugin updates
-	performance = {
-		rtp = {
-			-- Disable some built-in plugins we don't need
-			disabled_plugins = {
-				"gzip",
-				"tarPlugin",
-				"tohtml",
-				"tutor",
-				"zipPlugin",
-			},
-		},
-	},
-	ui = {
-		border = "rounded", -- Display borders in the UI
-		winblend = 0, -- Make UI fully opaque for transparency
-	},
-})
+require("config.lazy")
+-- Load Catppuccin and apply transparency settings
+vim.cmd.colorscheme("catppuccin")
 
--- Ensure transparency is applied after colorscheme is loaded
 vim.api.nvim_create_autocmd("ColorScheme", {
-	pattern = "*",
+	pattern = "catppuccin",
 	callback = function()
-		-- Apply transparent background
 		vim.api.nvim_set_hl(0, "Normal", { bg = "NONE", ctermbg = "NONE" })
 		vim.api.nvim_set_hl(0, "NormalFloat", { bg = "NONE", ctermbg = "NONE" })
 		vim.api.nvim_set_hl(0, "NormalNC", { bg = "NONE", ctermbg = "NONE" })
