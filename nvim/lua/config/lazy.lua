@@ -19,6 +19,7 @@ require("lazy").setup({
 	spec = {
 		-- import any extras modules here
 		{ import = "plugins" },
+		{ "wakatime/vim-wakatime", lazy = false }, -- WakaTime for tracking coding activity
 	},
 	defaults = {
 		lazy = true,
