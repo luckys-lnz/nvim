@@ -318,8 +318,8 @@ return {
 		},
 		config = function(_, opts)
 			local wk = require("which-key")
+			opts.defaults = opts.defaults or {}
 			wk.setup(opts)
-			wk.register(opts.defaults)
 
 			-- Set transparent background for which-key
 			vim.api.nvim_set_hl(0, "WhichKeyFloat", { bg = "NONE" })
@@ -345,6 +345,7 @@ return {
 			options = {
 				diagnostics = "nvim_lsp",
 				always_show_bufferline = false,
+				separator_style = "slant", -- Choose: "slant", "thick", "thin", "padded_slant"
 				diagnostics_indicator = function(_, _, diag)
 					local icons = require("config.icons").diagnostics
 					local ret = (diag.error and icons.Error .. diag.error .. " " or "")
@@ -359,6 +360,14 @@ return {
 						text_align = "left",
 					},
 				},
+			},
+			highlights = {
+				fill = { bg = "#1e1e2e" }, -- Background color of bufferline
+				background = { bg = "#1e1e2e" }, -- Background color of unselected tabs
+				buffer_selected = { fg = "#ffffff", bold = true, italic = false }, -- Active tab
+				separator_selected = { fg = "#89b4fa", bg = "#1e1e2e" }, -- Separator color
+				separator_visible = { fg = "#3e4452", bg = "#1e1e2e" },
+				separator = { fg = "#3e4452", bg = "#1e1e2e" },
 			},
 		},
 	},
