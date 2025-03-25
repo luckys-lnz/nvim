@@ -1,5 +1,4 @@
 return {
-	-- VS Code-like status line
 	{
 		"nvim-lualine/lualine.nvim",
 		event = "VeryLazy",
@@ -15,8 +14,13 @@ return {
 				lualine_a = { "mode" },
 				lualine_b = { "branch", "diff", "diagnostics" },
 				lualine_c = {
-					{ "filetype", icon_only = true, separator = "", padding = { left = 1, right = 0 } },
-					{ "filename", path = 1, symbols = { modified = "●", readonly = "", unnamed = "" } },
+					{
+						"buffers",
+						show_filename_only = true, -- Only show the filename, not the full path
+						hide_filename_extension = false,
+						show_modified_status = true,
+						symbols = { modified = "●", alternate_file = "#", directory = "" },
+					},
 				},
 				lualine_x = {
 					{
