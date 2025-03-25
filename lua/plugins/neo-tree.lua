@@ -25,6 +25,7 @@ return {
 				end
 			end
 		end,
+
 		opts = {
 			sources = { "filesystem", "buffers", "git_status", "document_symbols" },
 			open_files_do_not_replace_types = { "terminal", "Trouble", "trouble", "qf", "Outline" },
@@ -81,7 +82,8 @@ return {
 					},
 				},
 			},
-		},
+		}, -- Fixed misplaced `end` of opts
+
 		config = function(_, opts)
 			require("neo-tree").setup(opts)
 			vim.api.nvim_create_autocmd("TermClose", {
