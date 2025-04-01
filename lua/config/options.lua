@@ -20,6 +20,7 @@ opt.sidescrolloff = 8 -- Columns of context
 opt.splitbelow = true -- Put new windows below current
 opt.splitright = true -- Put new windows right of current
 opt.winblend = 0 -- Window blend (0 for fully opaque)
+opt.cmdheight = 2 -- Increases the command height, pushing content down
 
 -- Behavior
 opt.clipboard = "unnamedplus" -- Sync with system clipboard
