@@ -3,7 +3,7 @@
 
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
-	-- bootstrap lazy.nvim
+	-- Bootstrap lazy.nvim
 	vim.fn.system({
 		"git",
 		"clone",
@@ -17,46 +17,51 @@ vim.opt.rtp:prepend(vim.env.LAZY or lazypath)
 
 require("lazy").setup({
 	spec = {
-		-- import any extras modules here
+		-- Import plugins
 		{ import = "plugins" },
-		{ "wakatime/vim-wakatime", lazy = false }, -- WakaTime for tracking coding activity
-		-- { "zbirenbaum/copilot-cmp", dependencies = { "github/copilot.vim", "hrsh7th/nvim-cmp" } }
+
+		-- WakaTime for coding activity tracking
+		{ "wakatime/vim-wakatime", lazy = false },
+
+		-- Copilot integration with nvim-cmp
 		{
 			"zbirenbaum/copilot-cmp",
 			event = "InsertEnter",
+			dependencies = { "zbirenbaum/copilot.lua", "hrsh7th/nvim-cmp" },
 			config = function()
 				require("copilot_cmp").setup()
 			end,
-			dependencies = {
-				"zbirenbaum/copilot.lua",
-				cmd = "Copilot",
-				config = function()
-					require("copilot").setup({
-						suggestion = { enabled = false },
-						panel = { enabled = false },
-					})
-				end,
-			},
+		},
+		{
+			"zbirenbaum/copilot.lua",
+			cmd = "Copilot",
+			config = function()
+				require("copilot").setup({
+					suggestion = { enabled = false },
+					panel = { enabled = false },
+				})
+			end,
 		},
 	},
+
 	defaults = {
 		lazy = true,
-		version = false, -- always use the latest git commit
+		version = "*", -- To Always use the latest stable version
 	},
-	install = { colorscheme = { "catppuccin" } }, -- option for colorscheme "habamax"
-	checker = { enabled = true }, -- automatically check for plugin updates
+
+	install = { colorscheme = { "catppuccin" } },
+
+	checker = {
+		enabled = true, -- Automatically check for plugin updates
+		notify = true, -- Get notifications when updates are available
+	},
+
 	performance = {
 		rtp = {
-			-- disable some rtp plugins
-			disabled_plugins = {
-				"gzip",
-				"tarPlugin",
-				"tohtml",
-				"tutor",
-				"zipPlugin",
-			},
+			disabled_plugins = { "gzip", "tarPlugin", "tohtml", "tutor", "zipPlugin" },
 		},
 	},
+
 	ui = {
 		border = "rounded",
 		icons = {
