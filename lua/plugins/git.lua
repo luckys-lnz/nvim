@@ -4,12 +4,12 @@ return {
 		event = { "BufReadPre", "BufNewFile" },
 		opts = {
 			signs = {
-				add = { text = "" }, -- Plus sign for additions
-				change = { text = "" }, -- Pencil for changes
-				delete = { text = "󰍵" }, -- Trash bin for deletions
+				add = { text = "" },
+				change = { text = "" },
+				delete = { text = "󰍵" },
 				topdelete = { text = "󰍵" },
-				changedelete = { text = "󰏦" }, -- Modified delete icon
-				untracked = { text = "" }, -- Question mark for untracked files
+				changedelete = { text = "󰏦" },
+				untracked = { text = "" },
 			},
 			signcolumn = true,
 			numhl = false,
@@ -36,9 +36,8 @@ return {
 				row = 0,
 				col = 1,
 			},
-			yadm = { enable = false }, -- Explicitly disable yadm if not needed
+			yadm = { enable = false },
 
-			-- Hook for attaching key mappings and other actions
 			on_attach = function(bufnr)
 				local gs = package.loaded.gitsigns
 
@@ -65,7 +64,7 @@ return {
 					return "<Ignore>"
 				end, { expr = true, desc = "󰊢 Previous Git Hunk" })
 
-				-- Git actions (stage, reset, etc.)
+				-- Git actions
 				map("n", "<leader>gs", gs.stage_hunk, { desc = " Stage Hunk" })
 				map("n", "<leader>gr", gs.reset_hunk, { desc = "󰅖 Reset Hunk" })
 				map("v", "<leader>gs", function()
@@ -87,6 +86,22 @@ return {
 					gs.diffthis("~")
 				end, { desc = "󰩄 Show Diff (Last Commit)" })
 				map("n", "<leader>td", gs.toggle_deleted, { desc = "󰍶 Toggle Deleted Lines" })
+
+				-- Git Commands
+				map("n", "<leader>gc", ":!git commit -v<CR>", { desc = "󰤖 Commit Changes" })
+				map("n", "<leader>ga", ":!git add .<CR>", { desc = "󰊢 Add All Files" })
+				map("n", "<leader>gP", function()
+					vim.cmd("!git push")
+					vim.notify("🚀 Pushed to remote", vim.log.levels.INFO)
+				end, { desc = "🚀 Push to Remote" })
+				map("n", "<leader>gU", function()
+					vim.cmd("!git pull --rebase")
+					vim.notify("⬇ Pulled latest changes", vim.log.levels.INFO)
+				end, { desc = "⬇ Pull from Remote" })
+
+				-- Stash Commands
+				map("n", "<leader>gS", ":!git stash<CR>", { desc = "📦 Stash Changes" })
+				map("n", "<leader>gL", ":!git stash list<CR>", { desc = "📦 List Stashes" })
 
 				-- Git text objects
 				map({ "o", "x" }, "ih", ":<C-U>Gitsigns select_hunk<CR>", { desc = " Select Git Hunk" })
