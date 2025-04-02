@@ -55,7 +55,7 @@ opt.titlestring = "%<%F%=%l/%L - nvim" -- Format of the window title
 -- Folding (using Treesitter)
 opt.foldmethod = "expr"
 opt.foldexpr = "nvim_treesitter#foldexpr()"
-opt.foldenable = false -- Disable folding by default
+opt.foldenable = true -- Disable folding by default
 opt.foldlevel = 99
 
 -- Global statusline
