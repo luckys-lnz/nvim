@@ -1,4 +1,3 @@
--- git settings
 return {
 	{
 		"lewis6991/gitsigns.nvim",
@@ -37,17 +36,19 @@ return {
 				row = 0,
 				col = 1,
 			},
-			yadm = { enable = false },
+			yadm = { enable = false }, -- Explicitly disable yadm if not needed
+
+			-- Hook for attaching key mappings and other actions
 			on_attach = function(bufnr)
 				local gs = package.loaded.gitsigns
 
-				local function map(mode, l, r, opts)
+				local function map(mode, lhs, rhs, opts)
 					opts = opts or {}
 					opts.buffer = bufnr
-					vim.keymap.set(mode, l, r, opts)
+					vim.keymap.set(mode, lhs, rhs, opts)
 				end
 
-				-- Navigation
+				-- Navigation between hunks
 				map("n", "]c", function()
 					if vim.wo.diff then
 						return "]c"
@@ -64,7 +65,7 @@ return {
 					return "<Ignore>"
 				end, { expr = true, desc = "󰊢 Previous Git Hunk" })
 
-				-- Actions
+				-- Git actions (stage, reset, etc.)
 				map("n", "<leader>gs", gs.stage_hunk, { desc = " Stage Hunk" })
 				map("n", "<leader>gr", gs.reset_hunk, { desc = "󰅖 Reset Hunk" })
 				map("v", "<leader>gs", function()
@@ -87,7 +88,7 @@ return {
 				end, { desc = "󰩄 Show Diff (Last Commit)" })
 				map("n", "<leader>td", gs.toggle_deleted, { desc = "󰍶 Toggle Deleted Lines" })
 
-				-- Text object
+				-- Git text objects
 				map({ "o", "x" }, "ih", ":<C-U>Gitsigns select_hunk<CR>", { desc = " Select Git Hunk" })
 			end,
 		},
