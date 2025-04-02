@@ -44,12 +44,12 @@ return {
 					["x"] = "cut_to_clipboard", -- Cut
 					["c"] = "copy_to_clipboard", -- Copy
 					["p"] = "paste_from_clipboard", -- Paste
-					["y"] = "copy_filename", -- Copy name
-					["Y"] = "copy_path", -- Copy relative path
+					-- ["y"] = "copy_filename", -- Copy name
+					-- ["Y"] = "copy_path", -- Copy relative path
 					["<CR>"] = "open", -- Open
-					["<Tab>"] = "open_preview", -- Preview
-					[">"] = "next_sibling", -- Next sibling
-					["<"] = "prev_sibling", -- Previous sibling
+					-- ["<Tab>"] = "open_preview", -- Preview
+					-- [">"] = "next_sibling", -- Next sibling
+					-- ["<"] = "prev_sibling", -- Previous sibling
 					["K"] = "navigate_up", -- Parent directory
 					["h"] = "close_node", -- Close directory
 					["l"] = "open", -- Open (same as Enter)
