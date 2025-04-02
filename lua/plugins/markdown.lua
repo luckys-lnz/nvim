@@ -2,9 +2,7 @@ return {
 	{
 		"iamcco/markdown-preview.nvim",
 		ft = { "markdown" }, -- Load only for Markdown files
-		build = function()
-			vim.fn["mkdp#util#install"]()
-		end,
+		build = "cd app && npm install", -- Make sure dependencies are installed
 		cmd = { "MarkdownPreview", "MarkdownPreviewStop", "MarkdownPreviewToggle" },
 		keys = {
 			{
