@@ -48,7 +48,7 @@ return {
 				function()
 					require("ufo").closeAllFolds()
 				end,
-				desc = "Close all folds",
+				desc = "Close open folds",
 			},
 			{
 				"<leader>ofk", -- Open folds except kinds
