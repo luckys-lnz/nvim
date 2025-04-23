@@ -43,10 +43,6 @@ keymap("n", "<Tab>", ":bnext<CR>", opts("Next buffer"))
 keymap("n", "<S-Tab>", ":bprevious<CR>", opts("Previous buffer"))
 keymap("n", "<leader>xb", ":bd<CR>", opts("Close buffer"))
 
--- File Operations
-keymap("n", "<C-s>", ":w<CR>", opts("Save file"))
-keymap("i", "<C-s>", "<Esc>:w<CR>", opts("Save file"))
-
 -- Quit
 keymap("n", "<leader>qq", ":q<CR>", opts("Quit"))
 keymap("n", "<leader>Qq", ":qa!<CR>", opts("Force quit"))
