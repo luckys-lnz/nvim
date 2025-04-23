@@ -1,9 +1,9 @@
 -- lua/plugins/editor.lua
--- Editor enhancements for a VS Code-like experience
+-- Editor enhancements for a modern VS Code-like experience
 
 return {
 
-	-- VS Code-like comment
+	-- 🧠 Smart commenting with gcc, gc, etc.
 	{
 		"numToStr/Comment.nvim",
 		event = "BufReadPost",
@@ -32,7 +32,7 @@ return {
 		},
 	},
 
-	-- VS Code-like surround
+	-- 🔄 Surround text objects effortlessly like in VS Code
 	{
 		"kylechui/nvim-surround",
 		version = "*",
@@ -53,7 +53,7 @@ return {
 		},
 	},
 
-	-- VS Code-like autopairs
+	-- ⚡ Autopairs like a beast + Treesitter-aware
 	{
 		"windwp/nvim-autopairs",
 		event = "InsertEnter",
@@ -68,7 +68,7 @@ return {
 			fast_wrap = {
 				map = "<M-e>",
 				chars = { "{", "[", "(", '"', "'" },
-				pattern = string.gsub([[ [%'%"%)%>%]%)%}%,] ]], "%s+", ""),
+				pattern = [=[[%'%"%)%>%]%)%}%,]]=],
 				offset = 0,
 				end_key = "$",
 				keys = "qwertyuiopzxcvbnmasdfghjkl",
@@ -77,14 +77,25 @@ return {
 				highlight_grey = "LineNr",
 			},
 		},
+		config = function(_, opts)
+			local npairs = require("nvim-autopairs")
+			npairs.setup(opts)
+
+			-- Integrate with nvim-cmp if installed
+			local has_cmp, cmp = pcall(require, "cmp")
+			if has_cmp then
+				local cmp_autopairs = require("nvim-autopairs.completion.cmp")
+				cmp.event:on("confirm_done", cmp_autopairs.on_confirm_done())
+			end
+		end,
 	},
 
-	-- VS Code-like session management
+	-- 💾 Session management like a boss
 	{
 		"folke/persistence.nvim",
-		event = "BufReadPre",
+		event = "BufReadPre", -- before buffers are loaded
 		opts = {
-			dir = vim.fn.expand(vim.fn.stdpath("state") .. "/sessions/"),
+			dir = vim.fn.stdpath("state") .. "/sessions/",
 			options = { "buffers", "curdir", "tabpages", "winsize" },
 		},
 		keys = {
@@ -93,21 +104,21 @@ return {
 				function()
 					require("persistence").load()
 				end,
-				desc = "Restore Session",
+				desc = "📂 Restore Session",
 			},
 			{
 				"<leader>ql",
 				function()
 					require("persistence").load({ last = true })
 				end,
-				desc = "Restore Last Session",
+				desc = "🕑 Restore Last Session",
 			},
 			{
 				"<leader>qd",
 				function()
 					require("persistence").stop()
 				end,
-				desc = "Don't Save Current Session",
+				desc = "🚫 Don't Save Current Session",
 			},
 		},
 	},
