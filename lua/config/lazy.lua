@@ -49,7 +49,7 @@ require("lazy").setup({
 		version = "*", -- To Always use the latest stable version
 	},
 
-	install = { colorscheme = { "catppuccin" } }, -- catppuccin
+	install = { colorscheme = { "tokyonight" } }, -- catpuccin, tokyonight
 
 	checker = {
 		enabled = true, -- Automatically check for plugin updates
