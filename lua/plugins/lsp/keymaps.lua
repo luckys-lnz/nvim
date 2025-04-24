@@ -6,6 +6,7 @@ local M = {}
 function M.on_attach(client, buffer)
 	local self = M.new(client, buffer)
 
+	-- Navigation
 	self:map("gd", function()
 		vim.lsp.buf.definition()
 	end, { desc = "Goto Definition" })
@@ -21,6 +22,8 @@ function M.on_attach(client, buffer)
 	self:map("gt", function()
 		vim.lsp.buf.type_definition()
 	end, { desc = "Goto Type Definition" })
+	
+	-- Documentation
 	self:map("K", function()
 		vim.lsp.buf.hover()
 	end, { desc = "Hover" })
@@ -30,17 +33,17 @@ function M.on_attach(client, buffer)
 	self:map("<C-k>", function()
 		vim.lsp.buf.signature_help()
 	end, { mode = "i", desc = "Signature Help" })
+	
+	-- Code Actions
 	self:map("<leader>ca", function()
 		vim.lsp.buf.code_action()
 	end, { desc = "Code Action", mode = { "n", "v" } })
 	self:map("<leader>cr", function()
 		vim.lsp.buf.rename()
 	end, { desc = "Rename" })
-	self:map("<F2>", function()
-		vim.lsp.buf.rename()
-	end, { desc = "Rename" })
-
-	-- VS Code-like diagnostics
+	-- Using F2 for rename is already defined in the main keymaps file
+	
+	-- Diagnostics
 	self:map("<leader>cd", function()
 		vim.diagnostic.open_float()
 	end, { desc = "Line Diagnostics" })
@@ -63,7 +66,7 @@ function M.on_attach(client, buffer)
 		vim.diagnostic.goto_prev({ severity = vim.diagnostic.severity.WARN })
 	end, { desc = "Prev Warning" })
 
-	-- VS Code-like formatting
+	-- Formatting
 	self:map("<leader>cf", function()
 		vim.lsp.buf.format({ async = true })
 	end, { desc = "Format Document" })
@@ -71,7 +74,7 @@ function M.on_attach(client, buffer)
 		vim.lsp.buf.range_formatting()
 	end, { desc = "Format Range", mode = "v" })
 
-	-- VS Code-like workspace
+	-- Workspace
 	self:map("<leader>wa", function()
 		vim.lsp.buf.add_workspace_folder()
 	end, { desc = "Add Folder" })
