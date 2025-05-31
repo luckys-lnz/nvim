@@ -20,9 +20,6 @@ require("lazy").setup({
 		-- Import plugins
 		{ import = "plugins" },
 
-		-- WakaTime for coding activity tracking
-		{ "wakatime/vim-wakatime", lazy = false },
-
 		-- Copilot integration with nvim-cmp
 		{
 			"zbirenbaum/copilot-cmp",
