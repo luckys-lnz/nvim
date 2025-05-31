@@ -8,7 +8,7 @@ return {
 		dependencies = {
 			{ "folke/neoconf.nvim", cmd = "Neoconf", config = true },
 			{ "folke/neodev.nvim", opts = {} },
-			{ "mason.nvim" },
+			{ "williamboman/mason.nvim" },
 			{ "williamboman/mason-lspconfig.nvim" },
 			{
 				"hrsh7th/cmp-nvim-lsp",
@@ -159,7 +159,39 @@ return {
 			local have_mason, mlsp = pcall(require, "mason-lspconfig")
 			local all_mslp_servers = {}
 			if have_mason then
-				all_mslp_servers = vim.tbl_keys(require("mason-lspconfig.mappings.server").lspconfig_to_package)
+				-- Fixed: Use the correct API to get available servers
+				local success, available_servers = pcall(mlsp.get_available_servers)
+				if success then
+					all_mslp_servers = available_servers
+				else
+					-- Fallback: try alternative method
+					local mapping_success, mappings = pcall(require, "mason-lspconfig.mappings")
+					if mapping_success and mappings and mappings.server then
+						all_mslp_servers = vim.tbl_keys(mappings.server)
+					elseif mapping_success and mappings and mappings.lspconfig_to_package then
+						all_mslp_servers = vim.tbl_keys(mappings.lspconfig_to_package)
+					else
+						-- Final fallback: manually define common servers
+						all_mslp_servers = {
+							"lua_ls",
+							"pyright",
+							"ts_ls",
+							"html",
+							"cssls",
+							"jsonls",
+							"yamlls",
+							"marksman",
+							"tailwindcss",
+							"clangd",
+							"rust_analyzer",
+							"gopls",
+							"bashls",
+							"vimls",
+							"dockerls",
+							"eslint",
+						}
+					end
+				end
 			end
 
 			local ensure_installed = {} ---@type string[]
