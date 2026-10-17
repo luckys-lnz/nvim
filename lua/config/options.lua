@@ -1,103 +1,96 @@
--- lua/config/options.lua
--- General Neovim settings
+-- Editor options.  :help '<option>' explains any of these, e.g. :help 'scrolloff'
 
 local opt = vim.opt
 
--- UI
+-- ── UI ──────────────────────────────────────────────────────────────────────
 opt.guifont = "Cartograph CF:h13"
 opt.number = true
-opt.relativenumber = true
+opt.relativenumber = true -- relative numbers make `5j` / `12k` jumps effortless
 opt.cursorline = true
 opt.signcolumn = "yes"
 opt.termguicolors = true
-opt.showmode = false
+opt.showmode = false -- the statusline shows the mode
+opt.cmdheight = 0 -- noice draws the command line as a popup
+opt.laststatus = 3 -- one global statusline
+opt.winborder = "rounded" -- every floating window gets a rounded border
 opt.conceallevel = 2
 opt.list = true
-vim.opt.listchars = "tab:» ,trail:·,nbsp:␣"
+opt.listchars = { tab = "» ", trail = "·", nbsp = "␣" }
+opt.pumheight = 12
 opt.pumblend = 0
-opt.pumheight = 10
+opt.winblend = 0
 opt.scrolloff = 8
 opt.sidescrolloff = 8
+opt.smoothscroll = true
 opt.splitbelow = true
 opt.splitright = true
-opt.winblend = 0
-opt.cmdheight = 0      -- hide cmdline when not in use (noice handles display)
-opt.shortmess:append("c")
-opt.shortmess:append("S") -- suppress search count, noice shows it
-
--- Fill characters: clean box-drawing at split corners, no ~ at end of buffer
+opt.splitkeep = "screen"
+opt.wrap = false
+opt.linebreak = true
+opt.breakindent = true
+opt.title = true
+opt.titlestring = "%<%F%=%l/%L - nvim"
+opt.shortmess:append({ c = true, S = true, I = true })
 opt.fillchars = {
-	horiz      = "─",
-	horizup    = "┴",
-	horizdown  = "┬",
-	vert       = "│",
-	vertleft   = "┤",
-	vertright  = "├",
-	verthoriz  = "┼",
-	eob        = " ",  -- hide end-of-buffer tilde
-	fold       = " ",
-	foldopen   = "▾",
-	foldclose  = "▸",
-	foldsep    = " ",
-	diff       = "╱",
+	horiz = "─",
+	horizup = "┴",
+	horizdown = "┬",
+	vert = "│",
+	vertleft = "┤",
+	vertright = "├",
+	verthoriz = "┼",
+	eob = " ",
+	diff = "╱",
+	fold = " ",
+	foldopen = "▾",
+	foldclose = "▸",
+	foldsep = " ",
 }
 
--- Neovide: zero padding so the editor fills the window edge to edge
-if vim.g.neovide then
-	vim.g.neovide_padding_top    = 0
-	vim.g.neovide_padding_bottom = 0
-	vim.g.neovide_padding_right  = 0
-	vim.g.neovide_padding_left   = 0
-	vim.g.neovide_window_blurred = false
-end
+-- ── Behaviour ───────────────────────────────────────────────────────────────
+-- Share the system clipboard (scheduled: the provider lookup is slow at startup).
+vim.schedule(function() opt.clipboard = "unnamedplus" end)
+opt.mouse = "a"
+opt.confirm = true -- ask to save instead of failing on :q
+opt.undofile = true
+opt.undolevels = 10000
+opt.swapfile = false
+opt.updatetime = 200
+opt.timeoutlen = 400 -- which-key pops up after this delay
+opt.virtualedit = "block"
+opt.completeopt = "menu,menuone,noselect"
+opt.jumpoptions = "view"
 
--- Behavior
-opt.clipboard = "unnamedplus" -- Sync with system clipboard
-opt.completeopt = "menu,menuone,noselect" -- Better completion experience
-opt.confirm = true -- confirm to save changes before exiting
-opt.mouse = "a" -- enable mouse mode
-opt.undofile = true -- save undo history
-opt.undolevels = 10000 -- maximum number of changes that can be undone
-opt.updatetime = 200 -- faster completion
-opt.timeoutlen = 300 -- time to wait for a mapped sequence to complete
-opt.virtualedit = "block" -- allow cursor to move where there is no text in visual block mode
-opt.swapfile = false -- don't use swapfile
+-- ── Indentation (per-language overrides live in autocmds.lua / .editorconfig) ─
+opt.expandtab = true
+opt.shiftwidth = 2
+opt.tabstop = 2
+opt.softtabstop = 2
+opt.shiftround = true
+opt.smartindent = true
 
--- Indentation
-opt.expandtab = true -- Use spaces instead of tabs
-opt.shiftwidth = 2 -- Size of an indent
-opt.tabstop = 2 -- Number of spaces tabs count for
-opt.softtabstop = 2 -- Number of spaces that a <Tab> counts for
-opt.smartindent = true -- Insert indents automatically
-opt.wrap = false -- Disable line wrap
-opt.breakindent = true -- Enable break indent
+-- ── Search ──────────────────────────────────────────────────────────────────
+opt.ignorecase = true
+opt.smartcase = true
+opt.inccommand = "split" -- live preview for :s/foo/bar
+opt.grepprg = "rg --vimgrep"
+opt.grepformat = "%f:%l:%c:%m"
 
--- Search
-opt.ignorecase = true -- Ignore case
-opt.smartcase = true -- Don't ignore case with capitals
-opt.inccommand = "split" -- Preview substitutions live
-
--- Windows
-opt.title = true -- Set the window title
-opt.titlestring = "%<%F%=%l/%L - nvim" -- Format of the window title
-
--- Folding (using Treesitter)
+-- ── Folding: treesitter-based, everything open by default ──────────────────
 opt.foldmethod = "expr"
-opt.foldexpr = "nvim_treesitter#foldexpr()"
-opt.foldenable = true -- Disable folding by default
+opt.foldexpr = "v:lua.vim.treesitter.foldexpr()"
+opt.foldtext = "" -- show the folded line with its normal syntax highlighting
 opt.foldlevel = 99
+opt.foldlevelstart = 99
 
--- Global statusline
-opt.laststatus = 3
+-- ── Languages ───────────────────────────────────────────────────────────────
+vim.g.c_syntax_for_h = true -- treat *.h as C, not C++
 
--- Disable some built-in plugins
-local disabled_built_ins = {
-	"netrw",
-	"netrwPlugin",
-	"netrwSettings",
-	"netrwFileHandlers",
-}
-
-for _, plugin in pairs(disabled_built_ins) do
-	vim.g["loaded_" .. plugin] = 1
+-- ── Neovide (GUI) ───────────────────────────────────────────────────────────
+if vim.g.neovide then
+	vim.g.neovide_padding_top = 0
+	vim.g.neovide_padding_bottom = 0
+	vim.g.neovide_padding_right = 0
+	vim.g.neovide_padding_left = 0
+	vim.g.neovide_window_blurred = false
 end

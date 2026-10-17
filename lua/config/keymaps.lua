@@ -1,62 +1,108 @@
-local keymap = vim.keymap.set
-local opts = function(desc) return { noremap = true, silent = true, desc = desc } end
+-- Core keymaps (no plugins needed).  Plugin keys live next to their plugin spec.
+-- Every mapping has a `desc`: that is what which-key and <Space>sk display.
+--
+-- Golden rules kept on purpose:
+--   * `d`, `c`, `x` still cut into the register — `dd` + `p` moves a line.
+--   * <C-w>, <C-d>, <C-u>, <C-o>, <C-i> keep their Vim meaning.
 
--- Window navigation
-keymap("n", "<C-h>", "<C-w>h", opts("Move to left window"))
-keymap("n", "<C-j>", "<C-w>j", opts("Move to bottom window"))
-keymap("n", "<C-k>", "<C-w>k", opts("Move to top window"))
-keymap("n", "<C-l>", "<C-w>l", opts("Move to right window"))
+local map = vim.keymap.set
 
--- Window resize (Alt + arrow)
-keymap("n", "<A-Up>",    ":resize +2<CR>",          opts("Resize window up"))
-keymap("n", "<A-Down>",  ":resize -2<CR>",           opts("Resize window down"))
-keymap("n", "<A-Left>",  ":vertical resize -2<CR>",  opts("Resize window left"))
-keymap("n", "<A-Right>", ":vertical resize +2<CR>",  opts("Resize window right"))
+-- ── VS Code muscle memory ───────────────────────────────────────────────────
+map({ "n", "i", "x", "s" }, "<C-s>", "<cmd>write<cr><esc>", { desc = "Save file" })
+map("n", "<C-a>", "ggVG", { desc = "Select all" })
+map("n", "<C-/>", "gcc", { remap = true, desc = "Toggle comment" })
+map("x", "<C-/>", "gc", { remap = true, desc = "Toggle comment" })
+map("n", "<C-_>", "gcc", { remap = true, desc = "which_key_ignore" }) -- terminals send Ctrl+/ as <C-_>
+map("x", "<C-_>", "gc", { remap = true, desc = "which_key_ignore" })
 
--- Buffer navigation (also handled by bufferline <S-h>/<S-l>)
-keymap("n", "<leader>bn", ":enew<CR>", opts("New buffer"))
+-- Move lines: Alt+j/k (Vim style) or Alt+↑/↓ (VS Code style)
+for _, k in ipairs({ { "<A-j>", "<A-k>" }, { "<A-Down>", "<A-Up>" } }) do
+	local down, up = k[1], k[2]
+	map("n", down, "<cmd>execute 'move .+' . v:count1<cr>==", { desc = "Move line down" })
+	map("n", up, "<cmd>execute 'move .-' . (v:count1 + 1)<cr>==", { desc = "Move line up" })
+	map("i", down, "<esc><cmd>move .+1<cr>==gi", { desc = "Move line down" })
+	map("i", up, "<esc><cmd>move .-2<cr>==gi", { desc = "Move line up" })
+	map(
+		"x",
+		down,
+		":<C-u>execute \"'<,'>move '>+\" . v:count1<cr>gv=gv",
+		{ silent = true, desc = "Move selection down" }
+	)
+	map(
+		"x",
+		up,
+		":<C-u>execute \"'<,'>move '<-\" . (v:count1 + 1)<cr>gv=gv",
+		{ silent = true, desc = "Move selection up" }
+	)
+end
 
--- Clear search highlights (<leader>/ is intuitive, <Esc> also clears)
-keymap("n", "<leader>/", ":nohlsearch<CR>", opts("Clear highlights"))
-keymap("n", "<Esc>",     ":nohlsearch<CR>", opts("Clear highlights"))
+-- ── Windows ─────────────────────────────────────────────────────────────────
+map("n", "<C-h>", "<C-w>h", { desc = "Go to left window" })
+map("n", "<C-j>", "<C-w>j", { desc = "Go to lower window" })
+map("n", "<C-k>", "<C-w>k", { desc = "Go to upper window" })
+map("n", "<C-l>", "<C-w>l", { desc = "Go to right window" })
+map("n", "<C-Up>", "<cmd>resize +2<cr>", { desc = "Increase window height" })
+map("n", "<C-Down>", "<cmd>resize -2<cr>", { desc = "Decrease window height" })
+map("n", "<C-Left>", "<cmd>vertical resize -2<cr>", { desc = "Decrease window width" })
+map("n", "<C-Right>", "<cmd>vertical resize +2<cr>", { desc = "Increase window width" })
+map("n", "<leader>wv", "<C-w>v", { desc = "Split right" })
+map("n", "<leader>ws", "<C-w>s", { desc = "Split below" })
+map("n", "<leader>wc", "<C-w>c", { desc = "Close window" })
+map("n", "<leader>wo", "<C-w>o", { desc = "Close other windows" })
+map("n", "<leader>w=", "<C-w>=", { desc = "Equalize sizes" })
+map("n", "<leader>|", "<C-w>v", { desc = "Split right" })
+map("n", "<leader>-", "<C-w>s", { desc = "Split below" })
 
--- Quit
-keymap("n", "<leader>qq", ":q<CR>",  opts("Quit"))
-keymap("n", "<leader>qQ", ":qa!<CR>", opts("Force quit all"))
+-- ── Buffers (tabs in VS Code terms) ─────────────────────────────────────────
+map("n", "<leader>bn", "<cmd>enew<cr>", { desc = "New empty buffer" })
+map("n", "<leader>`", "<cmd>e #<cr>", { desc = "Switch to last buffer" })
 
--- Select all
-keymap("n", "<C-a>", "gg<S-v>G", opts("Select all"))
+-- ── Editing comfort ─────────────────────────────────────────────────────────
+map("n", "<Esc>", "<cmd>nohlsearch<cr><esc>", { desc = "Clear search highlight" })
+map("x", "<", "<gv", { desc = "Indent left (keep selection)" })
+map("x", ">", ">gv", { desc = "Indent right (keep selection)" })
+map("x", "p", "P", { desc = "Paste without overwriting the register" })
+map("n", "<C-d>", "<C-d>zz", { desc = "Half page down (centered)" })
+map("n", "<C-u>", "<C-u>zz", { desc = "Half page up (centered)" })
+map("n", "n", "'Nn'[v:searchforward].'zzzv'", { expr = true, desc = "Next search result (centered)" })
+map("n", "N", "'nN'[v:searchforward].'zzzv'", { expr = true, desc = "Prev search result (centered)" })
+map("i", ",", ",<C-g>u") -- undo break-points: `u` undoes one phrase, not a whole paragraph
+map("i", ".", ".<C-g>u")
+map("i", ";", ";<C-g>u")
 
--- Indentation keeps selection
-keymap("v", "<", "<gv", opts("Indent left"))
-keymap("v", ">", ">gv", opts("Indent right"))
+-- Treesitter incremental selection (built into Neovim 0.12 as `an` / `in`)
+map("n", "<C-Space>", "van", { remap = true, desc = "Start/expand selection" })
+map("x", "<C-Space>", "an", { remap = true, desc = "Expand selection" })
+map("x", "<BS>", "in", { remap = true, desc = "Shrink selection" })
 
--- Move lines
-keymap("n", "<A-j>", ":m .+1<CR>==",        opts("Move line down"))
-keymap("n", "<A-k>", ":m .-2<CR>==",        opts("Move line up"))
-keymap("v", "<A-j>", ":m '>+1<CR>gv=gv",   opts("Move selection down"))
-keymap("v", "<A-k>", ":m '<-2<CR>gv=gv",   opts("Move selection up"))
+-- ── Diagnostics (]d / [d are built in) ──────────────────────────────────────
+local function jump(count, severity)
+	return function()
+		vim.diagnostic.jump({ count = count, float = true, severity = severity and vim.diagnostic.severity[severity] })
+	end
+end
+map("n", "]e", jump(1, "ERROR"), { desc = "Next error" })
+map("n", "[e", jump(-1, "ERROR"), { desc = "Prev error" })
+map("n", "]w", jump(1, "WARN"), { desc = "Next warning" })
+map("n", "[w", jump(-1, "WARN"), { desc = "Prev warning" })
+map("n", "<leader>cd", vim.diagnostic.open_float, { desc = "Line diagnostics" })
 
--- Center on scroll / search
-keymap("n", "<C-d>", "<C-d>zz",   opts("Scroll down and center"))
-keymap("n", "<C-u>", "<C-u>zz",   opts("Scroll up and center"))
-keymap("n", "n",     "nzzzv",     opts("Next search result"))
-keymap("n", "N",     "Nzzzv",     opts("Prev search result"))
+-- ── Run the current file (VS Code "Run Python File" / Code Runner) ─────────
+map("n", "<leader>rr", function() require("util.run").file() end, { desc = "Run current file" })
+map("n", "<leader>rs", function() require("util.run").npm_script() end, { desc = "Run package.json script" })
 
--- Paste without overwriting register
-keymap("v", "p", '"_dP', opts("Paste without copying"))
+-- ── Terminal mode ───────────────────────────────────────────────────────────
+-- Double <Esc> leaves terminal mode; a single <Esc> still reaches the program
+-- (so vim/lazygit/fzf running inside the terminal keep working).
+map("t", "<Esc><Esc>", [[<C-\><C-n>]], { desc = "Exit terminal mode" })
+map("t", "<C-h>", [[<C-\><C-n><C-w>h]], { desc = "Go to left window" })
+map("t", "<C-j>", [[<C-\><C-n><C-w>j]], { desc = "Go to lower window" })
+map("t", "<C-k>", [[<C-\><C-n><C-w>k]], { desc = "Go to upper window" })
+map("t", "<C-l>", [[<C-\><C-n><C-w>l]], { desc = "Go to right window" })
 
--- Delete without yanking
-keymap("n", "d", '"_d', opts("Delete (no yank)"))
-keymap("v", "d", '"_d', opts("Delete (no yank)"))
-
--- Yank to system clipboard
-keymap("n", "y", '"+y', opts("Yank to clipboard"))
-keymap("v", "y", '"+y', opts("Yank to clipboard"))
-keymap("n", "Y", '"+Y', opts("Yank line to clipboard"))
-
--- Splits
-keymap("n", "<leader>wv", ":vsplit<CR>", opts("Split vertical"))
-keymap("n", "<leader>wh", ":split<CR>",  opts("Split horizontal"))
-keymap("n", "<leader>wc", "<C-w>c",      opts("Close window"))
-keymap("n", "<leader>wo", "<C-w>o",      opts("Close other windows"))
+-- ── Quit / tools ────────────────────────────────────────────────────────────
+map("n", "<leader>qq", "<cmd>qa<cr>", { desc = "Quit all" })
+map("n", "<leader>l", "<cmd>Lazy<cr>", { desc = "Plugins (Lazy)" })
+map("n", "<leader>cm", "<cmd>Mason<cr>", { desc = "Tools (Mason)" })
+map("n", "<leader>cl", "<cmd>checkhealth vim.lsp<cr>", { desc = "LSP info" })
+map("n", "<leader>?", function() require("guru").open() end, { desc = "Guru: VS Code → Neovim cheatsheet" })

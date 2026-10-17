@@ -1,62 +1,45 @@
--- lua/config/lazy.lua
--- Lazy.nvim bootstrap and configuration
+-- Plugin manager bootstrap.  :Lazy opens the UI, :Lazy sync updates everything.
 
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.uv.fs_stat(lazypath) then
-	-- Bootstrap lazy.nvim
-	vim.fn.system({
+	local out = vim.fn.system({
 		"git",
 		"clone",
 		"--filter=blob:none",
-		"https://github.com/folke/lazy.nvim.git",
 		"--branch=stable",
+		"https://github.com/folke/lazy.nvim.git",
 		lazypath,
 	})
+	if vim.v.shell_error ~= 0 then
+		vim.api.nvim_echo({ { "Failed to clone lazy.nvim:\n" .. out, "ErrorMsg" } }, true, {})
+		return
+	end
 end
-vim.opt.rtp:prepend(vim.env.LAZY or lazypath)
+vim.opt.rtp:prepend(lazypath)
 
 require("lazy").setup({
+	-- Every folder must be imported explicitly; lazy does not recurse.
 	spec = {
-		{ import = "plugins" },
+		{ import = "plugins.ui" },
+		{ import = "plugins.editor" },
+		{ import = "plugins.coding" },
+		{ import = "plugins.lang" },
+		{ import = "plugins.tools" },
 	},
-
 	defaults = {
-		lazy = true,
-		version = "*", -- To Always use the latest stable version
+		-- Plugins load at startup unless the spec gives a trigger (event/cmd/keys/ft).
+		lazy = false,
+		-- Track HEAD; reproducibility comes from lazy-lock.json (commit it!).
+		version = false,
 	},
-
 	install = { colorscheme = { "catppuccin", "habamax" } },
-
-	checker = {
-		enabled = true, -- Automatically check for plugin updates
-		notify = true, -- Get notifications when updates are available
-	},
-
+	checker = { enabled = true, notify = false }, -- updates show as a badge in :Lazy
+	change_detection = { notify = false },
+	rocks = { enabled = false },
+	ui = { border = "rounded", backdrop = 100 },
 	performance = {
 		rtp = {
-			disabled_plugins = { "gzip", "tarPlugin", "tohtml", "tutor", "zipPlugin" },
-		},
-	},
-
-	rocks = {
-		enabled = false, -- Disable luarocks to avoid installation issues
-	},
-
-	ui = {
-		border = "rounded",
-		icons = {
-			cmd = "⌘",
-			config = "🛠",
-			event = "📅",
-			ft = "📂",
-			init = "⚙",
-			keys = "🔑",
-			plugin = "🔌",
-			runtime = "💻",
-			source = "📄",
-			start = "🚀",
-			task = "📌",
-			lazy = "💤 ",
+			disabled_plugins = { "gzip", "netrwPlugin", "tarPlugin", "tohtml", "tutor", "zipPlugin" },
 		},
 	},
 })

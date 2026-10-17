@@ -1,88 +1,102 @@
--- lua/config/autocmds.lua
--- Auto commands
+-- Autocommands.  :autocmd <group> lists what is registered.
 
-local function augroup(name)
-	return vim.api.nvim_create_augroup("vscode_" .. name, { clear = true })
-end
+local function augroup(name) return vim.api.nvim_create_augroup("user_" .. name, { clear = true }) end
+local autocmd = vim.api.nvim_create_autocmd
 
--- Highlight on yank
-vim.api.nvim_create_autocmd("TextYankPost", {
+-- Flash the yanked text
+autocmd("TextYankPost", {
 	group = augroup("highlight_yank"),
+	callback = function() vim.hl.on_yank({ timeout = 180 }) end,
+})
+
+-- Reload files changed outside Neovim (git checkout, formatter, etc.)
+autocmd({ "FocusGained", "TermClose", "TermLeave" }, {
+	group = augroup("checktime"),
 	callback = function()
-		vim.highlight.on_yank()
+		if vim.o.buftype ~= "nofile" then vim.cmd.checktime() end
 	end,
 })
 
--- Resize splits if window got resized
-vim.api.nvim_create_autocmd({ "VimResized" }, {
+-- Keep splits balanced when the terminal is resized
+autocmd("VimResized", {
 	group = augroup("resize_splits"),
 	callback = function()
+		local tab = vim.fn.tabpagenr()
 		vim.cmd("tabdo wincmd =")
+		vim.cmd("tabnext " .. tab)
 	end,
 })
 
--- Go to last loc when opening a buffer
-vim.api.nvim_create_autocmd("BufReadPost", {
+-- Reopen files at the last cursor position
+autocmd("BufReadPost", {
 	group = augroup("last_loc"),
-	callback = function()
-		local mark = vim.api.nvim_buf_get_mark(0, '"')
-		local lcount = vim.api.nvim_buf_line_count(0)
-		if mark[1] > 0 and mark[1] <= lcount then
+	callback = function(ev)
+		local exclude = { gitcommit = true, gitrebase = true }
+		if exclude[vim.bo[ev.buf].filetype] or vim.b[ev.buf].last_loc_done then return end
+		vim.b[ev.buf].last_loc_done = true
+		local mark = vim.api.nvim_buf_get_mark(ev.buf, '"')
+		if mark[1] > 0 and mark[1] <= vim.api.nvim_buf_line_count(ev.buf) then
 			pcall(vim.api.nvim_win_set_cursor, 0, mark)
 		end
 	end,
 })
 
--- Close some filetypes with <q>
-vim.api.nvim_create_autocmd("FileType", {
+-- Close helper windows with `q`
+autocmd("FileType", {
 	group = augroup("close_with_q"),
 	pattern = {
-		"qf",
+		"checkhealth",
+		"dap-float",
+		"dap-repl",
+		"gitsigns-blame",
 		"help",
-		"man",
-		"notify",
 		"lspinfo",
-		"spectre_panel",
+		"man",
+		"neotest-output",
+		"neotest-output-panel",
+		"neotest-summary",
+		"notify",
+		"qf",
 		"startuptime",
-		"tsplayground",
-		"PlenaryTestPopup",
 	},
-	callback = function(event)
-		vim.bo[event.buf].buflisted = false
-		vim.keymap.set("n", "q", "<cmd>close<cr>", { buffer = event.buf, silent = true })
+	callback = function(ev)
+		vim.bo[ev.buf].buflisted = false
+		vim.schedule(function()
+			vim.keymap.set("n", "q", function()
+				vim.cmd("close")
+				pcall(vim.api.nvim_buf_delete, ev.buf, { force = true })
+			end, { buffer = ev.buf, silent = true, desc = "Close window" })
+		end)
 	end,
 })
 
--- Auto create dir when saving a file
-vim.api.nvim_create_autocmd("BufWritePre", {
-	group = augroup("auto_create_dir"),
-	callback = function(event)
-		if event.match:match("^%w%w+://") then
-			return
-		end
-		local file = vim.uv.fs_realpath(event.match) or event.match
-		vim.fn.mkdir(vim.fn.fnamemodify(file, ":p:h"), "p")
-	end,
-})
-
--- Set wrap and spell in markdown and gitcommit
-vim.api.nvim_create_autocmd("FileType", {
-	group = augroup("wrap_spell"),
-	pattern = { "gitcommit", "markdown" },
+-- Prose: wrap + spell
+autocmd("FileType", {
+	group = augroup("prose"),
+	pattern = { "gitcommit", "markdown", "text" },
 	callback = function()
 		vim.opt_local.wrap = true
 		vim.opt_local.spell = true
 	end,
 })
 
--- Auto close NeoTree when it's the last window
--- vim.api.nvim_create_autocmd("BufEnter", {
--- 	group = augroup("neotree_auto_close"),
--- 	callback = function()
--- 		local layout = vim.api.nvim_call_function("winlayout", {})
--- 		if layout[1] == "leaf" and vim.bo.filetype == "neo-tree" and layout[2][1] == vim.api.nvim_get_current_win() then
--- 			vim.cmd("quit")
--- 		end
--- 	end,
--- })
+-- Language indentation defaults (an .editorconfig in the project wins)
+autocmd("FileType", {
+	group = augroup("indent"),
+	pattern = { "c", "cpp", "python" },
+	callback = function()
+		vim.opt_local.shiftwidth = 4
+		vim.opt_local.tabstop = 4
+		vim.opt_local.softtabstop = 4
+	end,
+})
 
+-- Create missing parent directories on save
+autocmd("BufWritePre", {
+	group = augroup("auto_create_dir"),
+	callback = function(ev)
+		if ev.match:match("^%w%w+:[\\/][\\/]") then return end
+		local file = vim.uv.fs_realpath(ev.match) or ev.match
+		vim.fn.mkdir(vim.fn.fnamemodify(file, ":p:h"), "p")
+	end,
+})
